@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>model_evaluation.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> or <div class="page"></div> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="file://c:\Users\april\DL\Part 1 - Artificial Neural Networks (ANN)\reports\report.css" type="text/css">
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="customer-churn-ann--statistical-evaluation-report">Customer Churn ANN — Statistical Evaluation Report</h1>
+<p><strong>Generated:</strong> 2026-10-29T13:10:44.212719-04:00</p>
+<h2 id="1-executive-summary">1. Executive summary</h2>
+<p>The model was evaluated on <strong>2,000 held-out test observations</strong>. Accuracy was <strong>85.90%</strong>, ROC-AUC was <strong>0.8582</strong>, precision was <strong>78.03%</strong>, and recall was <strong>42.75%</strong> at a classification threshold of <strong>0.50</strong>.</p>
+<p>The ROC-AUC indicates strong ranking discrimination on this test set. Recall is relatively low at the selected threshold. Review threshold tuning on validation data if identifying more churners is a business priority.</p>
+<p>These results describe performance on this test set; they do not by themselves establish statistical significance or business impact.</p>
+<h2 id="2-evaluation-metrics">2. Evaluation metrics</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align:right">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accuracy</td>
+<td style="text-align:right">0.8590 (85.90%)</td>
+</tr>
+<tr>
+<td>Precision</td>
+<td style="text-align:right">0.7803 (78.03%)</td>
+</tr>
+<tr>
+<td>Recall / Sensitivity</td>
+<td style="text-align:right">0.4275 (42.75%)</td>
+</tr>
+<tr>
+<td>F1 score</td>
+<td style="text-align:right">0.5524</td>
+</tr>
+<tr>
+<td>ROC-AUC</td>
+<td style="text-align:right">0.8582</td>
+</tr>
+<tr>
+<td>Average precision (PR-AUC field)</td>
+<td style="text-align:right">0.6969</td>
+</tr>
+<tr>
+<td>Specificity</td>
+<td style="text-align:right">0.9692 (96.92%)</td>
+</tr>
+<tr>
+<td>Classification threshold</td>
+<td style="text-align:right">0.50</td>
+</tr>
+</tbody>
+</table>
+<p>Average precision is calculated with scikit-learn's <code>average_precision_score</code>; it is not the trapezoidal integral of the precision-recall curve.</p>
+<h2 id="3-confusion-matrix">3. Confusion matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Actual class</th>
+<th style="text-align:right">Predicted stay (0)</th>
+<th style="text-align:right">Predicted churn (1)</th>
+<th style="text-align:right">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stay (0)</td>
+<td style="text-align:right">1,544</td>
+<td style="text-align:right">49</td>
+<td style="text-align:right">1,593</td>
+</tr>
+<tr>
+<td>Churn (1)</td>
+<td style="text-align:right">233</td>
+<td style="text-align:right">174</td>
+<td style="text-align:right">407</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align:right"><strong>1,777</strong></td>
+<td style="text-align:right"><strong>223</strong></td>
+<td style="text-align:right"><strong>2,000</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>False-positive rate: <strong>3.08%</strong>.</li>
+<li>False-negative rate: <strong>57.25%</strong>.</li>
+<li>Churn prevalence in test set: <strong>20.35%</strong>.</li>
+</ul>
+<p>At this threshold, the model identified 174 of 407 actual churners and missed 233. It flagged 223 customers as potential churners.</p>
+<p><img src="confusion_matrix.png" alt="Confusion matrix"></p>
+<h2 id="4-diagnostic-charts">4. Diagnostic charts</h2>
+<h3 id="roc-curve">ROC curve</h3>
+<p><img src="roc_curve.png" alt="ROC curve"></p>
+<h3 id="precision-recall-curve">Precision-recall curve</h3>
+<p><img src="precision_recall_curve.png" alt="Precision-recall curve"></p>
+<h3 id="training-and-validation-curves">Training and validation curves</h3>
+<p><img src="training_history.png" alt="Training history"></p>
+<p>Review the curves for divergence between training and validation performance. Early stopping alone does not prove that overfitting has been eliminated.</p>
+<h2 id="5-interpretation-and-limitations">5. Interpretation and limitations</h2>
+<ul>
+<li>Precision and recall reflect the selected classification threshold.</li>
+<li>ROC-AUC measures ranking discrimination, not probability calibration.</li>
+<li>Average precision should be interpreted relative to churn prevalence and suitable baseline models.</li>
+<li>The results do not establish causality or the effectiveness of retention interventions.</li>
+<li>Confirm that preprocessing was fitted only on training data and that the test set was not used for model or threshold selection.</li>
+</ul>
+<h2 id="6-recommendations">6. Recommendations</h2>
+<ol>
+<li>Tune the classification threshold using validation data; do not select it using the final test set.</li>
+<li>Compare against logistic regression and tree-based baselines using identical data splits.</li>
+<li>Estimate intervention costs and retention benefits before selecting an operating threshold.</li>
+<li>Assess probability calibration and evaluate performance on later customer cohorts.</li>
+</ol>
+<h2 id="7-reproducibility">7. Reproducibility</h2>
+<ul>
+<li>Test observations: 2,000</li>
+<li>Positive-class prevalence: 0.2035</li>
+<li>Decision threshold: 0.50</li>
+<li>Detailed metrics: <code>metrics.json</code></li>
+<li>Model and preprocessing artifacts should be versioned separately.</li>
+</ul>
+<hr>
+<p>This report was generated automatically from the current run's test labels, predicted probabilities, evaluation metrics, and training history.</p>
+
+</body>
+</html>

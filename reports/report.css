@@ -1,0 +1,86 @@
+
+@page {
+    size: A4;
+    margin: 15mm 16mm;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.4;
+    color: #222;
+}
+
+/* Keep headings with the content that follows them. */
+h1, h2, h3 {
+    page-break-after: avoid;
+    break-after: avoid-page;
+}
+
+h1 {
+    font-size: 22pt;
+    margin-bottom: 12px;
+}
+
+h2 {
+    font-size: 15pt;
+    margin-top: 20px;
+}
+
+h3 {
+    font-size: 12pt;
+}
+
+/* Keep charts within the printable page area. */
+img {
+    display: block;
+    max-width: 85% !important;
+    max-height: 145mm !important;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 10px auto 14px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* Make tables compact and readable. */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+    margin: 10px 0 16px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 5px 7px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f4f7;
+}
+
+/* Prevent individual rows from splitting where supported. */
+tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+p, li {
+    orphans: 3;
+    widows: 3;
+}
+
+@media print {
+    img {
+        max-width: 85% !important;
+        max-height: 145mm !important;
+    }
+
+    a {
+        color: #222;
+        text-decoration: none;
+    }
+}
